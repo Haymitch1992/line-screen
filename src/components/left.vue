@@ -49,6 +49,7 @@ p {
   display: inline-block;
   height: 600px;
   color: #fff;
+  vertical-align: top;
   .line-1 {
     font-size: 53px;
     vertical-align: top;

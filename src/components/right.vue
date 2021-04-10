@@ -1,5 +1,23 @@
 <template>
-  <div></div>
+  <div class="screen-right">
+    <div class="station-box">
+      <div class="station-item" v-for="(item, index) in topData" :key="index">
+        <p>{{ item.name }}</p>
+        <p>{{ item.nameEn }}</p>
+      </div>
+    </div>
+    <div class="information-box"></div>
+    <div class="station-box">
+      <div
+        class="station-item"
+        v-for="(item, index) in bottomData"
+        :key="index"
+      >
+        <p>{{ item.name }}</p>
+        <p>{{ item.nameEn }}</p>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -18,6 +36,8 @@ export default {
         isTransfer: false,
         transferLine: []
       },
+      topData: [],
+      bottomData: [],
       stationData: [
         {
           name: '岗厦北',
@@ -129,8 +149,43 @@ export default {
         }
       ]
     };
+  },
+  methods: {
+    incisionData() {
+      this.topData = this.stationData.slice(0, 8);
+      this.bottomData = this.stationData.slice(8, 15);
+    }
+  },
+  mounted() {
+    this.incisionData();
   }
 };
 </script>
 
-<style></style>
+<style lang="scss" scoped>
+.screen-right {
+  display: inline-block;
+  background: #e6e6e6;
+  width: 3000px;
+}
+.station-box {
+  height: 140px;
+  .station-item {
+    width: 200px;
+    height: 140px;
+    display: inline-block;
+    p {
+      text-align: center;
+    }
+  }
+}
+.information-box {
+  height: 300px;
+}
+.information-box {
+  background: #fff;
+  border: 10px solid #c9c9c9;
+  border-left: none;
+  box-shadow: 1px 1px 10px #5488c7;
+}
+</style>
