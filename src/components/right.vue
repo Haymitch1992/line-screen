@@ -11,6 +11,10 @@
             <div class="view-time">
               <p class="station-name">09:30</p>
             </div>
+            <div class="view-station">
+              <p class="station-name">{{ item.name }}</p>
+              <p class="station-name-en">{{ item.nameEn }}</p>
+            </div>
           </div>
         </div>
 
@@ -124,6 +128,10 @@
             </div>
             <div class="view-time">
               <p class="station-name">09:30</p>
+            </div>
+            <div class="view-station">
+              <p class="station-name">{{ item.name }}</p>
+              <p class="station-name-en">{{ item.nameEn }}</p>
             </div>
           </div>
         </div>
@@ -317,10 +325,10 @@ export default {
     left: 0px;
   }
   80% {
-    left: -330px;
+    left: -660px;
   }
   100% {
-    left: -330px;
+    left: -660px;
   }
 }
 p {
@@ -345,7 +353,7 @@ p {
     .scoll-box {
       position: absolute;
       top: 0;
-      width: 700px;
+      width: 1000px;
       text-align: left;
     }
     .roll {
