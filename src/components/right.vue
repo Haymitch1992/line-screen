@@ -8,8 +8,8 @@
               <p class="station-name">{{ item.name }}</p>
               <p class="station-name-en">{{ item.nameEn }}</p>
             </div>
-            <div class="view-time">
-              <p class="station-name">09:30</p>
+            <div class="view-time station-time">
+              <p class="station-name">{{ item.arrialtime }}</p>
             </div>
             <div class="view-station">
               <p class="station-name">{{ item.name }}</p>
@@ -26,7 +26,11 @@
               alt=""
               class="transfer-icon"
             />
-            <span v-if="!item.isTransfer" class="station-icon"></span>
+            <span
+              v-if="!item.isTransfer"
+              class="station-icon"
+              :class="index < currentIndex ? 'acitve' : ''"
+            ></span>
           </div>
           <div class="line">
             <span
@@ -126,8 +130,8 @@
               <p class="station-name">{{ item.name }}</p>
               <p class="station-name-en">{{ item.nameEn }}</p>
             </div>
-            <div class="view-time">
-              <p class="station-name">09:30</p>
+            <div class="view-time station-time">
+              <p class="station-name ">{{ item.arrialtime }}</p>
             </div>
             <div class="view-station">
               <p class="station-name">{{ item.name }}</p>
@@ -187,17 +191,20 @@ export default {
           name: '岗厦北',
           nameEn: 'Gangxia North',
           isTransfer: true,
+          arrialtime: '09:30',
           transferLine: [2]
         },
         {
           name: '黄木岗',
           nameEn: 'Huangmugang',
           isTransfer: true,
+          arrialtime: '09:33',
           transferLine: [7]
         },
         {
           name: '清水河',
           nameEn: 'Qingshuihe',
+          arrialtime: '09:36',
           isTransfer: false,
           transferLine: []
         },
@@ -205,71 +212,83 @@ export default {
           name: '布吉',
           nameEn: 'Buji',
           isTransfer: true,
+          arrialtime: '09:38',
           transferLine: [5, 3]
         },
         {
           name: '石芽岭',
           nameEn: 'Shiyaling',
           isTransfer: false,
+          arrialtime: '09:40',
           transferLine: []
         },
         {
           name: '六约北',
           nameEn: 'Liuyue North',
           isTransfer: false,
+          arrialtime: '09:43',
           transferLine: []
         },
         {
           name: '四联',
           nameEn: 'Silian',
           isTransfer: false,
+          arrialtime: '09:46',
           transferLine: []
         },
         {
           name: '坳背',
           nameEn: 'Aobei',
           isTransfer: false,
+          arrialtime: '09:48',
           transferLine: []
         },
         {
           name: '大运',
           nameEn: 'Universiade',
           isTransfer: false,
+          arrialtime: '09:50',
           transferLine: []
         },
         {
           name: '肿瘤医院',
           nameEn: 'Tumour Hospital',
           isTransfer: false,
+          arrialtime: '09:52',
           transferLine: []
         },
         {
           name: '宝荷',
           nameEn: 'Baohe',
           isTransfer: false,
+          arrialtime: '09:55',
           transferLine: []
         },
         {
           name: '宝龙',
           nameEn: 'Baolong',
           isTransfer: false,
+          arrialtime: '09:57',
           transferLine: []
         },
         {
           name: '沙湖',
           nameEn: 'Shahu',
           isTransfer: false,
+          arrialtime: '10:00',
           transferLine: []
         },
         {
           name: '坪山围',
           nameEn: 'Pingshanwei',
           isTransfer: false,
+          arrialtime: '10:03',
           transferLine: []
         },
         {
           name: '坪山广场',
           nameEn: 'Pingshan Square',
+          arrialtime: '10:06',
           isTransfer: false,
           transferLine: []
         },
@@ -277,19 +296,22 @@ export default {
           name: '朱洋坑',
           nameEn: 'Zhuyangkeng',
           isTransfer: false,
+          arrialtime: '10:09',
           transferLine: []
         },
         {
           name: '坑梓',
           nameEn: 'Kengzi',
           isTransfer: false,
+          arrialtime: '10:12',
           transferLine: []
         },
         {
           name: '沙田',
           nameEn: 'Shatian',
-          isTransfer: true,
-          transferLine: [5, 3]
+          isTransfer: false,
+          arrialtime: '10:15',
+          transferLine: []
         }
       ]
     };
@@ -304,7 +326,7 @@ export default {
         if (this.tag === 1) {
           this.tag = 2;
         } else {
-          this.tag = 2;
+          this.tag = 1;
         }
       }, 10000);
     }
@@ -321,8 +343,14 @@ export default {
   0% {
     left: 0px;
   }
-  50% {
+  20% {
     left: 0px;
+  }
+  40% {
+    left: -330px;
+  }
+  60% {
+    left: -330px;
   }
   80% {
     left: -660px;
@@ -357,7 +385,7 @@ p {
       text-align: left;
     }
     .roll {
-      animation: example 10s linear 2s infinite;
+      animation: example 15s linear 2s infinite;
     }
     .view-station {
       display: inline-block;
@@ -395,11 +423,17 @@ p {
         margin-top: 130px;
       }
     }
+
     .station-name {
       font-size: 40px;
       padding-bottom: 4px;
       position: relative;
       z-index: 2;
+    }
+    .station-time {
+      vertical-align: top;
+      position: relative;
+      top: 22px;
     }
     .station-name-en {
       font-size: 24px;
@@ -433,9 +467,12 @@ p {
       height: 30px;
       display: inline-block;
       border-radius: 50%;
-      border: 4px solid #5488c7;
+      border: 4px solid #c9c9c9;
       vertical-align: top;
       background: #fff;
+    }
+    .station-icon.acitve {
+      border: 4px solid #5488c7;
     }
     .line-num {
       font-size: 24px;
