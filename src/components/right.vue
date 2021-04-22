@@ -246,9 +246,9 @@ export default {
         {
           name: '大运',
           nameEn: 'Universiade',
-          isTransfer: false,
+          isTransfer: true,
           arrialtime: '09:50',
-          transferLine: []
+          transferLine: [3]
         },
         {
           name: '肿瘤医院',
