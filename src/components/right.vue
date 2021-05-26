@@ -5,15 +5,15 @@
         <div class="view-box">
           <div class="scoll-box" :class="index >= currentIndex ? 'roll' : ''">
             <div class="view-station">
-              <p class="station-name">{{ item.name }}</p>
-              <p class="station-name-en">{{ item.nameEn }}</p>
+              <p class="station-name">{{ item.cn_name }}</p>
+              <p class="station-name-en">{{ item.en_name }}</p>
             </div>
             <div class="view-time station-time">
               <p class="station-name">{{ item.arrialtime }}</p>
             </div>
             <div class="view-station">
-              <p class="station-name">{{ item.name }}</p>
-              <p class="station-name-en">{{ item.nameEn }}</p>
+              <p class="station-name">{{ item.cn_name }}</p>
+              <p class="station-name-en">{{ item.en_name }}</p>
             </div>
           </div>
         </div>
@@ -34,7 +34,7 @@
           </div>
           <div class="line">
             <span
-              v-for="(lineNum, index) in item.transferLine"
+              v-for="(lineNum, index) in item.transfer_line"
               :key="index"
               class="line-num"
               :class="'line-' + lineNum"
@@ -43,8 +43,19 @@
             </span>
           </div>
         </div>
-        <div :class="index >= currentIndex ? '' : 'arrive-line'"></div>
-        <div v-if="index === currentIndex - 1" class="right-arrow-box">
+        <div
+          :class="
+            index > currentIndex
+              ? ''
+              : index < currentIndex
+              ? 'arrive-line'
+              : 'current-line'
+          "
+        ></div>
+        <div
+          v-if="currentIndex <= 9 && index === currentIndex - 1"
+          class="right-arrow-box"
+        >
           <img src="../assets/arrow-right-2.png" alt="" />
         </div>
       </div>
@@ -127,15 +138,15 @@
         <div class="view-box">
           <div class="scoll-box  roll">
             <div class="view-station">
-              <p class="station-name">{{ item.name }}</p>
-              <p class="station-name-en">{{ item.nameEn }}</p>
+              <p class="station-name">{{ item.cn_name }}</p>
+              <p class="station-name-en">{{ item.en_name }}</p>
             </div>
             <div class="view-time station-time">
               <p class="station-name ">{{ item.arrialtime }}</p>
             </div>
             <div class="view-station">
-              <p class="station-name">{{ item.name }}</p>
-              <p class="station-name-en">{{ item.nameEn }}</p>
+              <p class="station-name">{{ item.cn_name }}</p>
+              <p class="station-name-en">{{ item.en_name }}</p>
             </div>
           </div>
         </div>
@@ -143,7 +154,7 @@
         <div class="postion-box-bottom">
           <div class="line">
             <span
-              v-for="(lineNum, index) in item.transferLine"
+              v-for="(lineNum, index) in item.transfer_line"
               :key="index"
               class="line-num"
               :class="'line-' + lineNum"
@@ -161,17 +172,34 @@
             <span v-if="!item.isTransfer" class="station-icon"></span>
           </div>
         </div>
+        <div
+          :class="
+            index > currentIndex
+              ? ''
+              : index < currentIndex
+              ? 'arrive-line'
+              : 'current-line'
+          "
+        ></div>
+        <div
+          v-if="currentIndex >= 9 && index === currentIndex - 1"
+          class="right-arrow-box"
+        >
+          <img src="../assets/arrow-right-2.png" alt="" />
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { stationInfo, trainInfo } from '@/services/user';
 export default {
   data() {
     return {
       tag: 1,
-      currentIndex: 8,
+      line_info: {},
+      currentIndex: 9,
       currentStation: {
         name: '大运',
         nameEn: 'Universiade',
@@ -317,11 +345,22 @@ export default {
     };
   },
   methods: {
+    // 切换当前站
     incisionData() {
+      // 增加模拟的时间
+      var dayjs = require('dayjs');
+      this.stationData.forEach((item, index) => {
+        item.arrialtime = dayjs()
+          .add(3 * index, 'minute')
+          .format('HH:mm');
+      });
       this.topData = this.stationData.slice(0, 9);
-      this.bottomData = this.stationData.slice(9, 18).reverse();
+      this.bottomData = this.stationData.slice(9, 18);
+      this.bottomData.reverse();
     },
     changeTag() {
+      // 切换逻辑是 列车即将进站 切换成列车状态图
+      // 列车即将到站是切换显示
       setInterval(() => {
         if (this.tag === 1) {
           this.tag = 2;
@@ -329,11 +368,28 @@ export default {
           this.tag = 1;
         }
       }, 10000);
+    },
+    getStationInfo() {
+      stationInfo(1, 0, 1).then(this.afterStationInfo);
+      trainInfo(1, 0, 1).then(res => {
+        console.log('当前信息', res.data);
+      });
+    },
+    afterStationInfo(res) {
+      console.log(res.data);
+      this.line_info = res.data.result[0];
+      this.stationData = res.data.result[0].line_info.all_station;
+
+      this.currentStation.name = res.data.result[0].station;
+      this.currentStation.nameEn = res.data.result[0].station_en;
+      this.nextStataion.name = res.data.result[0].next_station_info.cn_name;
+      this.nextStataion.nameEn = res.data.result[0].next_station_info.en_name;
+      this.incisionData(); // 拆分成两段
     }
   },
   mounted() {
-    this.incisionData();
     this.changeTag();
+    this.getStationInfo();
   }
 };
 </script>
@@ -417,13 +473,25 @@ p {
       width: 100%;
       position: absolute;
       right: -50%;
-      height: 160px;
+      height: 140px;
       top: 0;
+      animation: arrive 2s linear 1s infinite alternate;
+      // background: #d6e4f7;
       img {
         margin-top: 130px;
       }
     }
-
+    @keyframes arrive {
+      0% {
+        background-color: #e6e6e6;
+      }
+      50% {
+        background-color: #d6e4f7;
+      }
+      100% {
+        background-color: #e6e6e6;
+      }
+    }
     .station-name {
       font-size: 40px;
       padding-bottom: 4px;
