@@ -1,5 +1,6 @@
 <template>
   <div class="screen-right">
+    <!-- 站台信息上半部分 -->
     <div class="station-box">
       <div class="station-item" v-for="(item, index) in topData" :key="index">
         <div class="view-box">
@@ -29,7 +30,7 @@
             <span
               v-if="!item.isTransfer"
               class="station-icon"
-              :class="index < currentIndex ? 'acitve' : ''"
+              :class="index < upIndex ? 'acitve' : ''"
             ></span>
           </div>
           <div class="line">
@@ -45,24 +46,43 @@
         </div>
         <div
           :class="
-            index > currentIndex
+            index > upIndex
               ? ''
-              : index < currentIndex
+              : index < upIndex
               ? 'arrive-line'
               : 'current-line'
           "
         ></div>
         <div
-          v-if="currentIndex <= 9 && index === currentIndex - 1"
+          :class="
+            upIndex === 9 && index === upIndex - 1 && currentIndex > 9
+              ? 'border-item'
+              : ''
+          "
+        ></div>
+        <div
+          :class="
+            upIndex === 9 && index === upIndex - 1 && currentIndex > 9
+              ? 'border-container'
+              : ''
+          "
+        ></div>
+        <div
+          v-if="upIndex <= 9 && index === currentIndex - 1"
+          :title="index"
           class="right-arrow-box"
+          :class="`special-${index}`"
         >
           <img src="../assets/arrow-right-2.png" alt="" />
         </div>
       </div>
     </div>
+    <!-- pis屏幕中间切换内容1 -->
     <div class="information-box" v-if="tag === 1">
       <div class="inline-block-item block-item-1">
-        <p class="information-text-1">当前站</p>
+        <p class="information-text-1">
+          当前站
+        </p>
         <p class="information-text-2">Current station</p>
       </div>
       <div class="inline-block-item information-contaienr block-item-2">
@@ -86,6 +106,7 @@
         2分钟(min)
       </div>
     </div>
+    <!-- pis屏幕中间切换内容2 -->
     <div class="information-box" v-if="tag === 2">
       <div class="subway-container">
         <p class="location">
@@ -129,6 +150,7 @@
         </li>
       </ul>
     </div>
+    <!-- 站台信息下半部分 -->
     <div class="station-box">
       <div
         class="station-item"
@@ -136,7 +158,10 @@
         :key="index"
       >
         <div class="view-box">
-          <div class="scoll-box  roll">
+          <div
+            class="scoll-box "
+            :class="downIndex < 0 ? 'roll' : index >= downIndex ? '' : 'roll'"
+          >
             <div class="view-station">
               <p class="station-name">{{ item.cn_name }}</p>
               <p class="station-name-en">{{ item.en_name }}</p>
@@ -169,21 +194,25 @@
               alt=""
               class="transfer-icon"
             />
-            <span v-if="!item.isTransfer" class="station-icon"></span>
+            <span
+              v-if="!item.isTransfer"
+              class="station-icon"
+              :class="index > downIndex ? 'acitve' : ''"
+            ></span>
           </div>
         </div>
         <div
           :class="
-            index > currentIndex
+            downIndex < 0
               ? ''
-              : index < currentIndex
-              ? 'arrive-line'
-              : 'current-line'
+              : index > downIndex
+              ? 'arrive-line-2'
+              : 'current-line-2'
           "
         ></div>
         <div
-          v-if="currentIndex >= 9 && index === currentIndex - 1"
-          class="right-arrow-box"
+          v-if="downIndex <= 9 && index === downIndex - 1"
+          class="right-arrow-box-2"
         >
           <img src="../assets/arrow-right-2.png" alt="" />
         </div>
@@ -199,7 +228,7 @@ export default {
     return {
       tag: 1,
       line_info: {},
-      currentIndex: 9,
+      currentIndex: 1,
       currentStation: {
         name: '大运',
         nameEn: 'Universiade',
@@ -344,6 +373,30 @@ export default {
       ]
     };
   },
+  computed: {
+    upIndex() {
+      let num = '';
+      // 如果当前站 大于 9
+      if (this.currentIndex >= 9) {
+        num = 9;
+      } else {
+        num = this.currentIndex;
+      }
+      return num;
+    },
+    downIndex() {
+      let num = this.currentIndex - 18;
+      // 如果当前站 大于 9
+      if (this.currentIndex > 9) {
+        num = Math.abs(num);
+      } else {
+        num = -1;
+      }
+      // 将当前站转成 可用数据
+
+      return num;
+    }
+  },
   methods: {
     // 切换当前站
     incisionData() {
@@ -361,13 +414,13 @@ export default {
     changeTag() {
       // 切换逻辑是 列车即将进站 切换成列车状态图
       // 列车即将到站是切换显示
-      setInterval(() => {
-        if (this.tag === 1) {
-          this.tag = 2;
-        } else {
-          this.tag = 1;
-        }
-      }, 10000);
+      // setInterval(() => {
+      //   if (this.tag === 1) {
+      //     this.tag = 2;
+      //   } else {
+      //     this.tag = 1;
+      //   }
+      // }, 10000);
     },
     getStationInfo() {
       stationInfo(1, 0, 1).then(this.afterStationInfo);
@@ -462,6 +515,38 @@ p {
     z-index: 1;
     left: -50%;
   }
+  .arrive-line-2 {
+    position: absolute;
+    width: 100%;
+    height: 140px;
+    background: rgba(214, 228, 247, 1);
+    border-top: 10px solid #5488c7;
+    top: -10px;
+    z-index: 1;
+    left: -50%;
+  }
+  .border-item {
+    height: 320px;
+    position: absolute;
+    width: 156px;
+    top: 140px;
+    left: 50%;
+    z-index: 2;
+    box-sizing: border-box;
+    border: 10px solid #5488c7;
+    border-left: 0;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+  }
+  .border-container {
+    height: 600px;
+    position: absolute;
+    background: rgba(214, 228, 247, 1);
+    width: 260px;
+    top: 0px;
+    left: 50%;
+    z-index: 0;
+  }
   .station-item {
     width: 330px;
     height: 116px;
@@ -475,10 +560,39 @@ p {
       right: -50%;
       height: 140px;
       top: 0;
-      animation: arrive 2s linear 1s infinite alternate;
+      z-index: 20;
+      // animation: arrive 2s linear 1s infinite alternate;
       // background: #d6e4f7;
       img {
         margin-top: 130px;
+      }
+    }
+    .special-8 {
+      width: 100%;
+      position: absolute;
+      right: -50%;
+      height: 600px;
+      top: 0;
+      // background: #d6e4f7;
+      img {
+        margin-top: 290px;
+        transform: rotate(90deg);
+        position: relative;
+        left: -10px;
+        z-index: 100;
+      }
+    }
+    .right-arrow-box-2 {
+      width: 100%;
+      position: absolute;
+      right: -50%;
+      height: 140px;
+      top: 0;
+      // animation: arrive 2s linear 1s infinite alternate;
+      // background: #d6e4f7;
+      img {
+        margin-top: -36px;
+        transform: rotate(180deg);
       }
     }
     @keyframes arrive {
@@ -513,13 +627,14 @@ p {
       bottom: -66px;
       width: 100%;
       height: 82px;
-      z-index: 2;
+      z-index: 10;
     }
     .postion-box-bottom {
       position: absolute;
       top: -66px;
       width: 100%;
       height: 82px;
+      z-index: 10;
       .line {
         height: 40px;
       }
@@ -579,6 +694,7 @@ p {
   box-shadow: 1px 1px 10px #5488c7;
   text-align: center;
   width: 2950px;
+  position: relative;
   .block-item-1 {
     width: 300px;
   }
