@@ -496,7 +496,6 @@ export default {
           this.arrival_time = res.data.result[0].tarin_state.arrival_time;
           this.arrival_state = res.data.result[0].tarin_state.arrival_state;
           this.currentIndex = res.data.result[0].station_id - 1;
-          this.currentIndex = 3;
           this.incisionData(); // 拆分成两段
           this.degraded = true;
         })
