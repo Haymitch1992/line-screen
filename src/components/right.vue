@@ -8,7 +8,10 @@
       </div>
       <div class="station-item" v-for="(item, index) in topData" :key="index">
         <div class="view-box">
-          <div class="scoll-box" :class="index >= currentIndex ? 'roll' : ''">
+          <div
+            class="scoll-box"
+            :class="index >= currentIndex && degraded ? 'roll' : ''"
+          >
             <div class="view-station">
               <p class="station-name">{{ item.cn_name }}</p>
               <p class="station-name-en">{{ item.en_name }}</p>
@@ -16,6 +19,7 @@
             <div class="view-time station-time">
               <p class="station-name">{{ item.arrialtime }}</p>
             </div>
+
             <div class="view-station">
               <p class="station-name">{{ item.cn_name }}</p>
               <p class="station-name-en">{{ item.en_name }}</p>
@@ -128,11 +132,14 @@
         <p>{{ nextStataion.name }}</p>
         <p class="font24">{{ nextStataion.nameEn }}</p>
       </div>
-      <div class="inline-block-item block-item-5">
+      <div class="inline-block-item block-item-5" v-if="degraded">
         <p class="font60 color666">预计到站时间</p>
         <p class="font24 color666">Estimated arrival time</p>
       </div>
-      <div class="inline-block-item font80 colorBlue block-item-6">
+      <div
+        class="inline-block-item font80 colorBlue block-item-6"
+        v-if="degraded"
+      >
         <span v-if="arrival_state === 0">{{ arrival_time }}分钟(min)</span>
         <span v-if="arrival_state === 1">即将到达</span>
         <span v-if="arrival_state === 2">已到站</span>
@@ -195,7 +202,13 @@
         <div class="view-box">
           <div
             class="scoll-box "
-            :class="downIndex < 0 ? 'roll' : index >= downIndex ? '' : 'roll'"
+            :class="
+              downIndex < 0 && degraded
+                ? 'roll'
+                : index >= downIndex
+                ? ''
+                : 'roll'
+            "
           >
             <div class="view-station">
               <p class="station-name">{{ item.cn_name }}</p>
@@ -267,6 +280,7 @@ import { stationInfo, trainInfo } from '@/services/user';
 export default {
   data() {
     return {
+      degraded: true,
       tag: 1,
       line_info: {},
       currentIndex: 8,
@@ -482,11 +496,15 @@ export default {
           this.arrival_time = res.data.result[0].tarin_state.arrival_time;
           this.arrival_state = res.data.result[0].tarin_state.arrival_state;
           this.currentIndex = res.data.result[0].station_id - 1;
-          this.currentIndex = 17;
+          this.currentIndex = 3;
           this.incisionData(); // 拆分成两段
+          this.degraded = true;
         })
         .catch(() => {
-          console.log(1111111111111111111111);
+          // 降级逻辑 停止轮播
+          this.degraded = false;
+          this.arrival_state = 0;
+          //
         });
     },
     afterStationInfo(res) {
