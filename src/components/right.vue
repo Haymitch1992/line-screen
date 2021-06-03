@@ -2,6 +2,10 @@
   <div class="screen-right">
     <!-- 站台信息上半部分 -->
     <div class="station-box">
+      <!-- 第一站特殊处理 -->
+      <div class="teshu" v-if="currentIndex === 0">
+        <img src="../assets/arrow-right-2.gif" alt="" />
+      </div>
       <div class="station-item" v-for="(item, index) in topData" :key="index">
         <div class="view-box">
           <div class="scoll-box" :class="index >= currentIndex ? 'roll' : ''">
@@ -22,15 +26,26 @@
         <div class="postion-box">
           <div class="line">
             <img
-              v-if="item.isTransfer"
+              v-if="
+                item.isTransfer &&
+                  (item.isCurrentStation == 1 || item.isCurrentStation == 2)
+              "
               src="../assets/transfer.png"
               alt=""
               class="transfer-icon"
+              :class="`active${item.isCurrentStation}`"
+            />
+            <img
+              v-if="item.isTransfer && item.isCurrentStation == 0"
+              src="../assets/transfer-2.png"
+              alt=""
+              class="transfer-icon"
+              :class="`active${item.isCurrentStation}`"
             />
             <span
               v-if="!item.isTransfer"
               class="station-icon"
-              :class="index < upIndex ? 'acitve' : ''"
+              :class="`active${item.isCurrentStation}`"
             ></span>
           </div>
           <div class="line">
@@ -73,28 +88,43 @@
           class="right-arrow-box"
           :class="`special-${index}`"
         >
-          <img src="../assets/arrow-right-2.png" alt="" />
+          <div :class="`special-${index}`"></div>
+          <img src="../assets/arrow-right-2.gif" alt="" />
         </div>
       </div>
     </div>
     <!-- pis屏幕中间切换内容1 -->
-    <div class="information-box" v-if="tag === 1">
-      <div class="inline-block-item block-item-1">
+    <div class="information-box" v-if="arrival_state === 0">
+      <div class="inline-block-item block-item-1" v-if="currentIndex < 17">
         <p class="information-text-1">
           当前站
         </p>
-        <p class="information-text-2">Current station</p>
+        <p class="information-text-2">This station</p>
+      </div>
+      <div class="inline-block-item block-item-1" v-if="currentIndex === 17">
+        <p class="information-text-1">
+          终点站
+        </p>
+        <p class="information-text-2">Terminus</p>
       </div>
       <div class="inline-block-item information-contaienr block-item-2">
         <p>{{ currentStation.name }}</p>
         <p class="font24">{{ currentStation.nameEn }}</p>
       </div>
-      <img src="../assets/arrow-right-1.png" alt="" class="arrow-right-img" />
-      <div class="inline-block-item block-item-3">
+      <img
+        v-if="currentIndex < 17"
+        src="../assets/arrow-right-1.png"
+        alt=""
+        class="arrow-right-img"
+      />
+      <div v-if="currentIndex < 17" class="inline-block-item block-item-3">
         <p class="information-text-1">下一站</p>
         <p class="information-text-2">Next station</p>
       </div>
-      <div class="inline-block-item information-contaienr block-item-4">
+      <div
+        v-if="currentIndex < 17"
+        class="inline-block-item information-contaienr block-item-4"
+      >
         <p>{{ nextStataion.name }}</p>
         <p class="font24">{{ nextStataion.nameEn }}</p>
       </div>
@@ -103,11 +133,16 @@
         <p class="font24 color666">Estimated arrival time</p>
       </div>
       <div class="inline-block-item font80 colorBlue block-item-6">
-        2分钟(min)
+        <span v-if="arrival_state === 0">{{ arrival_time }}分钟(min)</span>
+        <span v-if="arrival_state === 1">即将到达</span>
+        <span v-if="arrival_state === 2">已到站</span>
       </div>
     </div>
     <!-- pis屏幕中间切换内容2 -->
-    <div class="information-box" v-if="tag === 2">
+    <div
+      class="information-box"
+      v-if="arrival_state === 2 || arrival_state === 1"
+    >
       <div class="subway-container">
         <p class="location">
           <img src="../assets/arrow-bottom.png" alt="" />
@@ -193,12 +228,18 @@
               src="../assets/transfer.png"
               alt=""
               class="transfer-icon"
+              :class="`active${item.isCurrentStation}`"
             />
             <span
               v-if="!item.isTransfer"
               class="station-icon"
-              :class="index > downIndex ? 'acitve' : ''"
+              :class="`active${item.isCurrentStation}`"
             ></span>
+            <!-- <span
+              v-if="!item.isTransfer"
+              class="station-icon"
+              :class="downIndex < 0 ? '' : index >= downIndex ? 'acitve' : ''"
+            ></span> -->
           </div>
         </div>
         <div
@@ -214,7 +255,7 @@
           v-if="downIndex <= 9 && index === downIndex - 1"
           class="right-arrow-box-2"
         >
-          <img src="../assets/arrow-right-2.png" alt="" />
+          <img src="../assets/arrow-right-2.gif" alt="" />
         </div>
       </div>
     </div>
@@ -228,14 +269,16 @@ export default {
     return {
       tag: 1,
       line_info: {},
-      currentIndex: 1,
+      currentIndex: 8,
       currentStation: {
+        // 当前站信息
         name: '大运',
         nameEn: 'Universiade',
         isTransfer: false,
         transferLine: []
       },
       nextStataion: {
+        // 下一站信息
         name: '肿瘤医院',
         nameEn: 'Tumour Hospital',
         isTransfer: false,
@@ -370,7 +413,10 @@ export default {
           arrialtime: '10:15',
           transferLine: []
         }
-      ]
+      ],
+      timer: '',
+      arrival_time: 5, // 预计到站时间
+      arrival_state: 0 // 到达状态 0 未到站 1 即将到站 2 已到站
     };
   },
   computed: {
@@ -403,46 +449,74 @@ export default {
       // 增加模拟的时间
       var dayjs = require('dayjs');
       this.stationData.forEach((item, index) => {
-        item.arrialtime = dayjs()
-          .add(3 * index, 'minute')
-          .format('HH:mm');
+        // 判断是否是换乘站
+        item.isTransfer = false;
+        item.isCurrentStation = 0;
+        if (item.transfer_line && item.transfer_line.length) {
+          item.isTransfer = true;
+        }
+
+        let num = 0;
+        if (index >= this.currentIndex) {
+          item.isCurrentStation = 2;
+          num++;
+          console.log(this.arrival_time);
+          item.arrialtime = dayjs()
+            .add(this.arrival_time + 3 * num, 'minute')
+            .format('HH:mm');
+        }
+        if (index === this.currentIndex) {
+          item.isCurrentStation = 1;
+        }
       });
       this.topData = this.stationData.slice(0, 9);
       this.bottomData = this.stationData.slice(9, 18);
       this.bottomData.reverse();
     },
-    changeTag() {
-      // 切换逻辑是 列车即将进站 切换成列车状态图
-      // 列车即将到站是切换显示
-      // setInterval(() => {
-      //   if (this.tag === 1) {
-      //     this.tag = 2;
-      //   } else {
-      //     this.tag = 1;
-      //   }
-      // }, 10000);
-    },
+
     getStationInfo() {
-      stationInfo(1, 0, 1).then(this.afterStationInfo);
-      trainInfo(1, 0, 1).then(res => {
-        console.log('当前信息', res.data);
-      });
+      trainInfo(1, 0, 1)
+        .then(res => {
+          // 获取到站情况
+          console.log('当前信息', res.data);
+          this.arrival_time = res.data.result[0].tarin_state.arrival_time;
+          this.arrival_state = res.data.result[0].tarin_state.arrival_state;
+          this.currentIndex = res.data.result[0].station_id - 1;
+          this.currentIndex = 17;
+          this.incisionData(); // 拆分成两段
+        })
+        .catch(() => {
+          console.log(1111111111111111111111);
+        });
     },
     afterStationInfo(res) {
       console.log(res.data);
       this.line_info = res.data.result[0];
       this.stationData = res.data.result[0].line_info.all_station;
-
+      // 当前站赋值
       this.currentStation.name = res.data.result[0].station;
       this.currentStation.nameEn = res.data.result[0].station_en;
+      // 下一站赋值
       this.nextStataion.name = res.data.result[0].next_station_info.cn_name;
       this.nextStataion.nameEn = res.data.result[0].next_station_info.en_name;
-      this.incisionData(); // 拆分成两段
+      // 设置终点站
+      this.$store.commit(
+        'setDestination',
+        res.data.result[0].line_info.all_station[
+          res.data.result[0].line_info.all_station.length - 1
+        ]
+      );
+      this.getStationInfo();
     }
   },
   mounted() {
-    this.changeTag();
-    this.getStationInfo();
+    stationInfo(1, 0, 1).then(this.afterStationInfo);
+
+    clearInterval(this.timer);
+    // 定时请求数据
+    this.timer = setInterval(() => {
+      this.getStationInfo();
+    }, 10000);
   }
 };
 </script>
@@ -472,11 +546,26 @@ p {
   padding: 0;
   margin: 0;
 }
+.teshu {
+  position: absolute;
+  left: 0;
+  width: 175px;
+  height: 140px;
+  border-bottom: #c9c9c9;
+  z-index: 10;
+  img {
+    position: absolute;
+    bottom: -18px;
+    left: 10px;
+  }
+}
 .screen-right {
   display: inline-block;
-  background: #e6e6e6;
+  // background: #e6e6e6;
+  background: #a9c8f2;
   width: calc(3840px - 772px);
   overflow: hidden;
+  position: relative;
 }
 .station-box {
   height: 140px;
@@ -509,8 +598,10 @@ p {
     position: absolute;
     width: 100%;
     height: 140px;
-    background: rgba(214, 228, 247, 1);
-    border-bottom: 10px solid #5488c7;
+    // background: #a9c8f2;
+    background: #e6e6e6;
+    border-bottom: 10px solid #c9c9c9;
+    // border-bottom: 10px solid #5488c7;
     top: 0px;
     z-index: 1;
     left: -50%;
@@ -519,8 +610,10 @@ p {
     position: absolute;
     width: 100%;
     height: 140px;
-    background: rgba(214, 228, 247, 1);
-    border-top: 10px solid #5488c7;
+    // background: #a9c8f2;
+    background: #e6e6e6;
+    border-top: 10px solid #c9c9c9;
+    // border-top: 10px solid #5488c7;
     top: -10px;
     z-index: 1;
     left: -50%;
@@ -528,12 +621,13 @@ p {
   .border-item {
     height: 320px;
     position: absolute;
-    width: 156px;
+    width: 155px;
     top: 140px;
     left: 50%;
     z-index: 2;
     box-sizing: border-box;
-    border: 10px solid #5488c7;
+    // border: 10px solid #5488c7;
+    border: 10px solid #c9c9c9;
     border-left: 0;
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
@@ -541,8 +635,9 @@ p {
   .border-container {
     height: 600px;
     position: absolute;
-    background: rgba(214, 228, 247, 1);
-    width: 260px;
+    // background: #a9c8f2;
+    background: #e6e6e6;
+    width: 262px;
     top: 0px;
     left: 50%;
     z-index: 0;
@@ -560,11 +655,12 @@ p {
       right: -50%;
       height: 140px;
       top: 0;
-      z-index: 20;
-      // animation: arrive 2s linear 1s infinite alternate;
+      animation: arrive 2s linear 1s infinite alternate;
       // background: #d6e4f7;
       img {
         margin-top: 130px;
+        position: relative;
+        z-index: 10;
       }
     }
     .special-8 {
@@ -574,11 +670,18 @@ p {
       height: 600px;
       top: 0;
       // background: #d6e4f7;
+      .special-8 {
+        width: 100%;
+        height: 600px;
+        position: absolute;
+        left: 0;
+        z-index: 1;
+      }
       img {
         margin-top: 290px;
         transform: rotate(90deg);
         position: relative;
-        left: -10px;
+        left: -16px;
         z-index: 100;
       }
     }
@@ -588,11 +691,15 @@ p {
       right: -50%;
       height: 140px;
       top: 0;
-      // animation: arrive 2s linear 1s infinite alternate;
+      z-index: 1;
+      animation: arrive 2s linear 1s infinite alternate;
       // background: #d6e4f7;
       img {
-        margin-top: -36px;
+        position: relative;
+        top: -20px;
         transform: rotate(180deg);
+        position: relative;
+        z-index: 10;
       }
     }
     @keyframes arrive {
@@ -600,7 +707,7 @@ p {
         background-color: #e6e6e6;
       }
       50% {
-        background-color: #d6e4f7;
+        background-color: #a9c8f2;
       }
       100% {
         background-color: #e6e6e6;
@@ -645,17 +752,30 @@ p {
     .transfer-icon {
       display: inline-block;
     }
+    .transfer-icon.active1 {
+      transform: scale(1.5);
+    }
     .station-icon {
       width: 30px;
       height: 30px;
       display: inline-block;
       border-radius: 50%;
-      border: 4px solid #c9c9c9;
+      border: 6px solid #5488c7;
       vertical-align: top;
       background: #fff;
     }
+    .station-icon.active0 {
+      border: 6px solid #c9c9c9;
+    }
+    .station-icon.active1 {
+      border: 6px solid #5488c7;
+      transform: scale(1.5);
+    }
+    .station-icon.active2 {
+      border: 6px solid #5488c7;
+    }
     .station-icon.acitve {
-      border: 4px solid #5488c7;
+      border: 6px solid #c9c9c9;
     }
     .line-num {
       font-size: 24px;
@@ -689,12 +809,14 @@ p {
 }
 .information-box {
   background: #fff;
-  border: 10px solid #c9c9c9;
+  border: 10px solid #5488c7;
   border-left: none;
-  box-shadow: 1px 1px 10px #5488c7;
+  // box-shadow: 1px 1px 10px #5488c7;
   text-align: center;
   width: 2950px;
   position: relative;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
   .block-item-1 {
     width: 300px;
   }

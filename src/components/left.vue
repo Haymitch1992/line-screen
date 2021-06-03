@@ -3,13 +3,13 @@
     <div class="line-1">
       <img class="line-logo" src="../assets/logo.png" alt="" />
       <span>14号线 Line14</span>
-      <span class="right-text">09:28</span>
+      <span class="right-text">{{ cunrretDate }}</span>
     </div>
     <div class="text-center middle-box">
       <img class="left-img" src="../assets/arrow-right.png" alt="" />
       <div class="inline-blcok text-left">
-        <p class="font-73">往沙田方向</p>
-        <p class="font-50">To Shatian</p>
+        <p class="font-73">往{{ this.$store.state.destination.cn_name }}方向</p>
+        <p class="font-50">To {{ this.$store.state.destination.en_name }}</p>
       </div>
     </div>
     <div class="text-center ">
@@ -32,7 +32,20 @@
 </template>
 
 <script>
-export default {};
+export default {
+  data() {
+    return {
+      cunrretDate: '',
+      timer: ''
+    };
+  },
+  mounted() {
+    let dayjs = require('dayjs');
+    setInterval(() => {
+      this.cunrretDate = dayjs().format('HH:mm');
+    }, 1000);
+  }
+};
 </script>
 
 <style lang="scss" scoped>

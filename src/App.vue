@@ -14,6 +14,7 @@
   background: #42b983;
   width: 3840px;
   height: 600px;
+  overflow: hidden;
 }
 body {
   padding: 0;
