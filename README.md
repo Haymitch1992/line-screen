@@ -2,6 +2,13 @@
 
 地铁到站提示屏（pis 屏幕）
 
+终端屏幕尺寸 3840px 600px
+
+```bash
+# 打包elctron 客户端版本
+yarn electron:build
+```
+
 ## Project setup
 
 ```
