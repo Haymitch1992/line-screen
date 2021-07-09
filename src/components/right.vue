@@ -474,7 +474,6 @@ export default {
         if (index >= this.currentIndex) {
           item.isCurrentStation = 2;
           num++;
-          console.log(this.arrival_time);
           item.arrialtime = dayjs()
             .add(this.arrival_time + 3 * num, 'minute')
             .format('HH:mm');
@@ -492,7 +491,6 @@ export default {
       trainInfo(1, 0, 1)
         .then(res => {
           // 获取到站情况
-          console.log('当前信息', res.data);
           this.arrival_time = res.data.result[0].tarin_state.arrival_time;
           this.arrival_state = res.data.result[0].tarin_state.arrival_state;
           this.currentIndex = res.data.result[0].station_id - 1;

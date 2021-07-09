@@ -1,5 +1,7 @@
 # line-srceen 深圳地铁到站提示屏（pis 屏幕）
 
+![pis]('/src/assets/pis.gif')
+
 终端屏幕设计尺寸 3840px 600px
 
 ## 版本更新
