@@ -507,7 +507,6 @@ export default {
         });
     },
     afterStationInfo(res) {
-      console.log(res.data);
       this.line_info = res.data.result[0];
       this.stationData = res.data.result[0].line_info.all_station;
       // 当前站赋值
@@ -523,16 +522,28 @@ export default {
           res.data.result[0].line_info.all_station.length - 1
         ]
       );
+      // 设置首班 末班时间
+      this.$store.commit('setLineInfo', {
+        start_time: res.data.result[0].line_info.start_time,
+        end_time: res.data.result[0].line_info.end_time
+      });
       this.getStationInfo();
     }
   },
   mounted() {
     stationInfo(1, 0, 1).then(this.afterStationInfo);
-
+    let num = 0;
     clearInterval(this.timer);
+    // 每十秒钟请求一次当前 列车信息 100s请求一次线路信息
     // 定时请求数据
     this.timer = setInterval(() => {
-      this.getStationInfo();
+      if (num >= 10) {
+        num = 0;
+        stationInfo(1, 0, 1).then(this.afterStationInfo);
+      } else {
+        num++;
+        this.getStationInfo();
+      }
     }, 10000);
   }
 };

@@ -8,8 +8,8 @@
     <div class="text-center middle-box">
       <img class="left-img" src="../assets/arrow-right.png" alt="" />
       <div class="inline-blcok text-left">
-        <p class="font-73">往{{ this.$store.state.destination.cn_name }}方向</p>
-        <p class="font-50">To {{ this.$store.state.destination.en_name }}</p>
+        <p class="font-73">往{{ $store.state.destination.cn_name }}方向</p>
+        <p class="font-50">To {{ $store.state.destination.en_name }}</p>
       </div>
     </div>
     <div class="text-center ">
@@ -18,14 +18,14 @@
         <p class="font-24">First train</p>
       </div>
       <div class="inline-blcok font-60 margin-box vertical-super">
-        06:00
+        {{ $store.state.lineInfo.start_time }}
       </div>
       <div class="inline-blcok margin-box">
         <p class="font-50">末班</p>
         <p class="font-24">Last train</p>
       </div>
       <div class="inline-blcok font-60 margin-box vertical-super">
-        23:00
+        {{ $store.state.lineInfo.end_time }}
       </div>
     </div>
   </div>
