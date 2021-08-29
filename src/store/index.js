@@ -6,12 +6,12 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     destination: {
-      cn_name: '', // 开往方向的中文站名
-      en_name: '', // 开往方向的英文站名
+      cn_name: '大运', // 开往方向的中文站名
+      en_name: 'Universiade', // 开往方向的英文站名
     },
     lineInfo: {
-      start_time: '', // 首班时间
-      end_time:'' // 末班时间
+      start_time: '06:00', // 首班时间
+      end_time:'23:30' // 末班时间
     }
 
   },

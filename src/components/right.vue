@@ -302,130 +302,130 @@ export default {
       bottomData: [],
       stationData: [
         {
-          name: '岗厦北',
-          nameEn: 'Gangxia North',
+          cn_name: '岗厦北',
+          en_name: 'Gangxia North',
           isTransfer: true,
           arrialtime: '09:30',
-          transferLine: [2]
+          transfer_line: [2]
         },
         {
-          name: '黄木岗',
-          nameEn: 'Huangmugang',
+          cn_name: '黄木岗',
+          en_name: 'Huangmugang',
           isTransfer: true,
           arrialtime: '09:33',
-          transferLine: [7]
+          transfer_line: [7]
         },
         {
-          name: '清水河',
-          nameEn: 'Qingshuihe',
+          cn_name: '清水河',
+          en_name: 'Qingshuihe',
           arrialtime: '09:36',
           isTransfer: false,
-          transferLine: []
+          transfer_line: []
         },
         {
-          name: '布吉',
-          nameEn: 'Buji',
+          cn_name: '布吉',
+          en_name: 'Buji',
           isTransfer: true,
           arrialtime: '09:38',
-          transferLine: [5, 3]
+          transfer_line: [5, 3]
         },
         {
-          name: '石芽岭',
-          nameEn: 'Shiyaling',
+          cn_name: '石芽岭',
+          en_name: 'Shiyaling',
           isTransfer: false,
           arrialtime: '09:40',
-          transferLine: []
+          transfer_line: []
         },
         {
-          name: '六约北',
-          nameEn: 'Liuyue North',
+          cn_name: '六约北',
+          en_name: 'Liuyue North',
           isTransfer: false,
           arrialtime: '09:43',
-          transferLine: []
+          transfer_line: []
         },
         {
-          name: '四联',
-          nameEn: 'Silian',
+          cn_name: '四联',
+          en_name: 'Silian',
           isTransfer: false,
           arrialtime: '09:46',
-          transferLine: []
+          transfer_line: []
         },
         {
-          name: '坳背',
-          nameEn: 'Aobei',
+          cn_name: '坳背',
+          en_name: 'Aobei',
           isTransfer: false,
           arrialtime: '09:48',
-          transferLine: []
+          transfer_line: []
         },
         {
-          name: '大运',
-          nameEn: 'Universiade',
+          cn_name: '大运',
+          en_name: 'Universiade',
           isTransfer: true,
           arrialtime: '09:50',
-          transferLine: [3]
+          transfer_line: [3]
         },
         {
-          name: '肿瘤医院',
-          nameEn: 'Tumour Hospital',
+          cn_name: '肿瘤医院',
+          en_name: 'Tumour Hospital',
           isTransfer: false,
           arrialtime: '09:52',
-          transferLine: []
+          transfer_line: []
         },
         {
-          name: '宝荷',
-          nameEn: 'Baohe',
+          cn_name: '宝荷',
+          en_name: 'Baohe',
           isTransfer: false,
           arrialtime: '09:55',
-          transferLine: []
+          transfer_line: []
         },
         {
-          name: '宝龙',
-          nameEn: 'Baolong',
+          cn_name: '宝龙',
+          en_name: 'Baolong',
           isTransfer: false,
           arrialtime: '09:57',
-          transferLine: []
+          transfer_line: []
         },
         {
-          name: '沙湖',
-          nameEn: 'Shahu',
+          cn_name: '沙湖',
+          en_name: 'Shahu',
           isTransfer: false,
           arrialtime: '10:00',
-          transferLine: []
+          transfer_line: []
         },
         {
-          name: '坪山围',
-          nameEn: 'Pingshanwei',
+          cn_name: '坪山围',
+          en_name: 'Pingshanwei',
           isTransfer: false,
           arrialtime: '10:03',
-          transferLine: []
+          transfer_line: []
         },
         {
-          name: '坪山广场',
-          nameEn: 'Pingshan Square',
+          cn_name: '坪山广场',
+          en_name: 'Pingshan Square',
           arrialtime: '10:06',
           isTransfer: false,
-          transferLine: []
+          transfer_line: []
         },
         {
-          name: '朱洋坑',
-          nameEn: 'Zhuyangkeng',
+          cn_name: '朱洋坑',
+          en_name: 'Zhuyangkeng',
           isTransfer: false,
           arrialtime: '10:09',
-          transferLine: []
+          transfer_line: []
         },
         {
-          name: '坑梓',
-          nameEn: 'Kengzi',
+          cn_name: '坑梓',
+          en_name: 'Kengzi',
           isTransfer: false,
           arrialtime: '10:12',
-          transferLine: []
+          transfer_line: []
         },
         {
-          name: '沙田',
-          nameEn: 'Shatian',
+          cn_name: '沙田',
+          en_name: 'Shatian',
           isTransfer: false,
           arrialtime: '10:15',
-          transferLine: []
+          transfer_line: []
         }
       ],
       timer: '',
@@ -526,10 +526,16 @@ export default {
         end_time: res.data.result[0].line_info.end_time
       });
       this.getStationInfo();
+    },
+    errorStationInfo() {
+      console.log(this.stationData);
+      this.incisionData();
     }
   },
   mounted() {
-    stationInfo(1, 0, 1).then(this.afterStationInfo);
+    stationInfo(1, 0, 1)
+      .then(this.afterStationInfo)
+      .catch(this.errorStationInfo);
     let num = 0;
     clearInterval(this.timer);
     // 每十秒钟请求一次当前 列车信息 100s请求一次线路信息
