@@ -461,6 +461,7 @@ export default {
     // 切换当前站
     incisionData() {
       // 增加模拟的时间
+      let num = 0;
       var dayjs = require('dayjs');
       this.stationData.forEach((item, index) => {
         // 判断是否是换乘站
@@ -470,7 +471,6 @@ export default {
           item.isTransfer = true;
         }
 
-        let num = 0;
         if (index >= this.currentIndex) {
           item.isCurrentStation = 2;
           num++;
@@ -536,18 +536,19 @@ export default {
     stationInfo(1, 0, 1)
       .then(this.afterStationInfo)
       .catch(this.errorStationInfo);
-    let num = 0;
+    // let num = 0;
     clearInterval(this.timer);
     // 每十秒钟请求一次当前 列车信息 100s请求一次线路信息
     // 定时请求数据
     this.timer = setInterval(() => {
-      if (num >= 10) {
-        num = 0;
-        stationInfo(1, 0, 1).then(this.afterStationInfo);
-      } else {
-        num++;
-        this.getStationInfo();
-      }
+      // if (num >= 10) {
+      //   num = 0;
+
+      // } else {
+      //   num++;
+      stationInfo(1, 0, 1).then(this.afterStationInfo);
+      this.getStationInfo();
+      // }
     }, 10000);
   }
 };
