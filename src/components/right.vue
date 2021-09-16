@@ -98,7 +98,7 @@
       </div>
     </div>
     <!-- pis屏幕中间切换内容1 -->
-    <div class="information-box" v-if="arrival_state === 0">
+    <div class="information-box" v-if="showItem">
       <div class="inline-block-item block-item-1" v-if="currentIndex < 17">
         <p class="information-text-1">
           当前站
@@ -146,10 +146,7 @@
       </div>
     </div>
     <!-- pis屏幕中间切换内容2 -->
-    <div
-      class="information-box"
-      v-if="arrival_state === 2 || arrival_state === 1"
-    >
+    <div class="information-box" v-if="!showItem">
       <div class="subway-container">
         <p class="location">
           <img src="../assets/arrow-bottom.png" alt="" />
@@ -280,6 +277,7 @@ import { stationInfo, trainInfo } from '@/services/user';
 export default {
   data() {
     return {
+      showItem: false,
       degraded: true,
       tag: 1,
       line_info: {},
@@ -548,6 +546,7 @@ export default {
       //   num++;
       stationInfo(1, 0, 1).then(this.afterStationInfo);
       this.getStationInfo();
+      this.showItem = !this.showItem;
       // }
     }, 10000);
   }
