@@ -1,4 +1,4 @@
-import {LOGIN, ROUTES,STATION_INFO,TRAIN_INFO} from '@/services/api'
+import {LOGIN, ROUTES,STATION_INFO,GET_GUIDE_INFO,TRAIN_INFO} from '@/services/api'
 import {request, METHOD, removeAuthorization} from '@/utils/request'
 /**
  * 登录服务
@@ -34,6 +34,11 @@ export async function getRoutesConfig() {
   return request(ROUTES, METHOD.GET)
 }
 
+export async function agsagsInfo() {
+  return request(GET_GUIDE_INFO, METHOD.GET, {
+    device_id: 'ZHJZP-1', // 设备ID
+  })
+}
 /**
  * 退出登录
  */
@@ -47,5 +52,6 @@ export default {
   login,
   logout,
   getRoutesConfig,
-  stationInfo
+  stationInfo,
+  agsagsInfo
 }

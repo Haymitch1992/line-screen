@@ -7,4 +7,5 @@ module.exports = {
   ROUTES: `${BASE_URL}/routes`,
   STATION_INFO: `${BASE_URL}/api/v1/device/platform_other/station_info`,
   TRAIN_INFO: `${BASE_URL}/api/v1/device/platform_other/train_info`,
+  GET_GUIDE_INFO: `http://10.252.187.11:80/api/v1/device/platform_ags/guide_info`,
 }

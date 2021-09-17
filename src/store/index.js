@@ -12,8 +12,7 @@ export default new Vuex.Store({
     lineInfo: {
       start_time: '06:00', // 首班时间
       end_time:'23:30' // 末班时间
-    }
-
+    },
   },
   mutations: {
     setDestination(state, obj){
