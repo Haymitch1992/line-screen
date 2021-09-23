@@ -189,6 +189,11 @@
         </li>
       </ul>
     </div>
+    <!--  -->
+    <span class="tips-text">
+      此门不开请到旁门排队
+      <img class="door-direction-arrow" src="../assets/arrow-1.png" alt="" />
+    </span>
     <!-- 站台信息下半部分 -->
     <div class="station-box">
       <div
@@ -554,6 +559,18 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.door-direction-arrow {
+  position: relative;
+  top: 4px;
+  width: 40px;
+}
+.tips-text {
+  font-size: 36px;
+  color: #ed9066;
+  position: absolute;
+  right: 420px;
+  top: 380px;
+}
 @keyframes example {
   0% {
     left: 0px;

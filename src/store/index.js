@@ -13,6 +13,7 @@ export default new Vuex.Store({
       start_time: '06:00', // 首班时间
       end_time:'23:30' // 末班时间
     },
+    pageStatus:'service_scene'
   },
   mutations: {
     setDestination(state, obj){
@@ -20,6 +21,9 @@ export default new Vuex.Store({
     },
     setLineInfo(state, obj) {
       state.lineInfo = obj
+    },
+    setPageStatus(state, str) {
+      state.pageStatus = str
     }
   },
   actions: {
