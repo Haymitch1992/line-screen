@@ -32,7 +32,12 @@ export default {
   data() {
     return {
       // wsuri: 'ws://172.51.215.158:8081/api/v1/device/platform_ats/connection', // ws wss
-      wsuri: 'ws://10.252.187.11:80/api/v1/device/platform_ws/connection',
+      // wsuri: 'ws://10.252.187.11:80/api/v1/device/platform_ws/connection',
+      // wsuri: 'ws://172.51.215.158:80/api/v1/device/platform_ws/connection',
+      // ws wssws:10.252.187.11:80
+      //  wss:10.252.187.11:443
+      // wsuri: 'wss://172.51.215.158:30082/api/v1/device/platform_ws/connection',
+      wsuri: 'wss:10.252.187.11:443/api/v1/device/platform_ws/connection',
       lockReconnect: false, // 连接失败不进行重连
       maxReconnect: 5, // 最大重连次数，若连接失败
       socket: null
