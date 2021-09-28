@@ -37,7 +37,7 @@ export default {
       // ws wssws:10.252.187.11:80
       //  wss:10.252.187.11:443
       // wsuri: 'wss://172.51.215.158:30082/api/v1/device/platform_ws/connection',
-      wsuri: 'wss:10.252.187.11:443/api/v1/device/platform_ws/connection',
+      wsuri: 'ws:10.252.187.11:80/api/v1/device/platform_ws/connection',
       lockReconnect: false, // 连接失败不进行重连
       maxReconnect: 5, // 最大重连次数，若连接失败
       socket: null
@@ -97,7 +97,11 @@ export default {
       if (obj.scene === 'welcome_scene') {
         this.$store.commit('setPageStatus', 'service_scene');
       } else if (obj.scene === 'service_scene') {
-        this.$store.commit('setPageStatus', 'service_scene');
+        if (obj.msg) {
+          // this.$store.commit('changeShowTips', true);
+        } else {
+          this.$store.commit('setPageStatus', 'service_scene');
+        }
       } else if (obj.scene === 'emergency_fire') {
         this.$store.commit('setPageStatus', 'emergency_fire');
       } else if (obj.scene === 'emergency_flood') {
